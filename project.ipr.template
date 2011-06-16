@@ -1,0 +1,19 @@
+<component name="CompilerConfiguration">
+  <option name="DEFAULT_COMPILER" value="Javac" />
+  <resourceExtensions />
+  <wildcardResourcePatterns>
+    <entry name="?*.properties" />
+    <entry name="?*.xml" />
+    <entry name="?*.gif" />
+    <entry name="?*.png" />
+    <entry name="?*.jpeg" />
+    <entry name="?*.jpg" />
+    <entry name="?*.html" />
+    <entry name="?*.dtd" />
+    <entry name="?*.tld" />
+    <entry name="?*.ftl" />
+    <entry name="?*.csv" />
+    <entry name="?*.log" />
+  </wildcardResourcePatterns>
+  <annotationProcessing enabled="false" useClasspath="true" />
+</component>
