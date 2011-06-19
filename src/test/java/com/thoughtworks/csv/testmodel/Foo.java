@@ -1,11 +1,27 @@
-package com.thoughtworks.csv;
+package com.thoughtworks.csv.testmodel;
+
+import com.thoughtworks.csv.CSVColumn;
 
 public class Foo {
-    @CSVColumn(1)
+    @CSVColumn(0)
     private int id;
 
-    @CSVColumn(2)
+    @CSVColumn(1)
     private String name;
+
+    @CSVColumn(2)
+    private boolean isSelected;
+
+    @CSVColumn(3)
+    private double price;
+
+    public double getPrice() {
+        return price;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
 
     public int getId() {
         return id;
