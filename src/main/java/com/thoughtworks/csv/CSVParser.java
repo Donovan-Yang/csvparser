@@ -1,41 +1,37 @@
 package com.thoughtworks.csv;
 
-import com.google.common.collect.Lists;
-import com.google.common.io.LineReader;
+import au.com.bytecode.opencsv.CSVReader;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CSVParser {
-    public static final String SEPARATOR = ",";
+    public static final char SEPARATOR = ',';
 
     public <T> List<T> parse(InputStream is, Class<T> clazz) {
+        CSVReader reader = new CSVReader(new InputStreamReader(is), SEPARATOR);
         try {
-            return parseLines(clazz, new LineReader(new InputStreamReader(is)));
+            return parseFromCSV(clazz, reader);
         } catch (IOException e) {
             throw new CSVParseException(e);
         }
     }
 
-    private <T> List<T> parseLines(Class<T> clazz, LineReader lineReader) throws IOException {
-        List<T> results = Lists.newArrayList();
-        for (String line = lineReader.readLine(); line != null; line = lineReader.readLine()) {
-            line = line.trim();
-            if (line.length() == 0) {
-                continue;
-            }
-            results.add(parseLine(line, clazz));
+    private <T> List<T> parseFromCSV(Class<T> clazz, CSVReader reader) throws IOException {
+        List<T> results = new ArrayList<T>();
+        List<String[]> csvGroup = reader.readAll();
+        for (String[] line : csvGroup) {
+            results.add(parseLine(clazz, line));
         }
         return results;
     }
 
-    private <T> T parseLine(String line, Class<T> clazz) {
+    private <T> T parseLine(Class<T> clazz, String[] columns) {
         T instance = newInstance(clazz);
-
-        String[] columns = line.split(SEPARATOR);
         for (Field field : clazz.getDeclaredFields()) {
             CSVColumn annotation = field.getAnnotation(CSVColumn.class);
             if (annotation == null) {

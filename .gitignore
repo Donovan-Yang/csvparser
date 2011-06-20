@@ -5,3 +5,4 @@
 
 #ignore buildr outputs
 target/
+reports/
