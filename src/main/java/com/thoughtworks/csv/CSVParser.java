@@ -12,9 +12,15 @@ import java.util.List;
 public class CSVParser {
     public static final String SEPARATOR = ",";
 
-    public <T> List<T> parse(InputStream is, Class<T> clazz) throws IOException, InstantiationException, IllegalAccessException {
-        LineReader lineReader = new LineReader(new InputStreamReader(is));
+    public <T> List<T> parse(InputStream is, Class<T> clazz) {
+        try {
+            return parseLines(clazz, new LineReader(new InputStreamReader(is)));
+        } catch (IOException e) {
+            throw new CSVParseException(e);
+        }
+    }
 
+    private <T> List<T> parseLines(Class<T> clazz, LineReader lineReader) throws IOException {
         List<T> results = Lists.newArrayList();
         for (String line = lineReader.readLine(); line != null; line = lineReader.readLine()) {
             line = line.trim();
@@ -23,28 +29,44 @@ public class CSVParser {
             }
             results.add(parseLine(line, clazz));
         }
-
         return results;
     }
 
-    private <T> T parseLine(String line, Class<T> clazz) throws IllegalAccessException, InstantiationException {
-        T instance = clazz.newInstance();
+    private <T> T parseLine(String line, Class<T> clazz) {
+        T instance = newInstance(clazz);
+
         String[] columns = line.split(SEPARATOR);
         for (Field field : clazz.getDeclaredFields()) {
             CSVColumn annotation = field.getAnnotation(CSVColumn.class);
-            if (annotation == null) continue;
+            if (annotation == null) {
+                continue;
+            }
             setField(instance, field, columns[annotation.value()].trim());
         }
 
         return instance;
     }
 
-    private <T> void setField(T instance, Field field, String value) throws IllegalAccessException {
-        field.setAccessible(true);
-        field.set(instance, parseValue(field, value));
+    private <T> T newInstance(Class<T> clazz) {
+        try {
+            return clazz.newInstance();
+        } catch (InstantiationException e) {
+            throw new CSVParseException(e);
+        } catch (IllegalAccessException e) {
+            throw new CSVParseException(e);
+        }
     }
 
-    private Object parseValue(Field field, String value) throws UnSupportedFieldTypeException {
+    private <T> void setField(T instance, Field field, String value) {
+        field.setAccessible(true);
+        try {
+            field.set(instance, parseValue(field, value));
+        } catch (IllegalAccessException e) {
+            throw new CSVParseException(e);
+        }
+    }
+
+    private Object parseValue(Field field, String value) {
         Class<?> declaringClass = field.getType();
 
         if (declaringClass == String.class) {
@@ -57,6 +79,6 @@ public class CSVParser {
             return Double.parseDouble(value);
         }
 
-        throw new UnSupportedFieldTypeException(declaringClass.getName());
+        throw new CSVParseException(String.format("%s is not supported.", declaringClass.getName()));
     }
 }

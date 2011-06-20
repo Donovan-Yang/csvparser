@@ -4,18 +4,15 @@ import com.thoughtworks.csv.testmodel.FieldTypeNotSupported;
 import com.thoughtworks.csv.testmodel.Foo;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class CSVParserTest {
     @Test
-    public void should_parse_csv_file_to_pojo() throws IOException, IllegalAccessException, InstantiationException {
+    public void should_parse_csv_file_to_pojo() {
         InputStream is = this.getClass().getResourceAsStream("/com/thoughtworks/csv/fixtures/foo.csv");
 
         CSVParser parser = new CSVParser();
@@ -30,15 +27,10 @@ public class CSVParserTest {
         assertThat(foos.get(0).getPrice(), is(12.3));
     }
 
-    @Test
-    public void should_throws_unsupported_field_type_exception_when_field_type_is_not_supported() throws IOException, IllegalAccessException, InstantiationException {
+    @Test(expected = CSVParseException.class)
+    public void should_throws_unsupported_field_type_exception_when_field_type_is_not_supported() {
         InputStream is = this.getClass().getResourceAsStream("/com/thoughtworks/csv/fixtures/foo.csv");
         CSVParser parser = new CSVParser();
-        try{
-            parser.parse(is, FieldTypeNotSupported.class);
-        }catch (UnSupportedFieldTypeException e){
-            assertThat(e, instanceOf(UnSupportedFieldTypeException.class));
-            assertThat(e.getMessage(), equalTo("com.thoughtworks.csv.UnSupportedFieldTypeException is not supported yet."));
-        }
+        parser.parse(is, FieldTypeNotSupported.class);
     }
 }

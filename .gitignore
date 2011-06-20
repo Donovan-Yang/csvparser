@@ -1,0 +1,7 @@
+#ignore IntelliJ project files
+*.iml
+*.ipr
+*.iws
+
+#ignore buildr outputs
+target/
