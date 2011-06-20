@@ -1,7 +1,9 @@
 package com.thoughtworks.csv;
 
+import com.thoughtworks.csv.testmodel.BigIndexModel;
 import com.thoughtworks.csv.testmodel.FieldTypeNotSupported;
 import com.thoughtworks.csv.testmodel.Foo;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -45,5 +47,14 @@ public class CSVParserTest {
         List<Foo> foos = parser.parse(is, Foo.class);
         assertThat(foos.get(0).getName(), is("quote, with comma"));
         assertThat(foos.get(1).getName(), is("normal blank"));
+    }
+
+    @Test
+    public void should_parse_as_null_for_bigger_index_column() {
+        InputStream is = this.getClass().getResourceAsStream("/com/thoughtworks/csv/fixtures/foo.csv");
+        List<BigIndexModel> foos = parser.parse(is, BigIndexModel.class);
+
+        assertThat(foos.get(0).getName(), is("foo"));
+        assertThat(foos.get(0).getBigIndexField(), CoreMatchers.<String>nullValue());
     }
 }

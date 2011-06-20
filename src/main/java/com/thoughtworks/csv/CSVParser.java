@@ -37,7 +37,9 @@ public class CSVParser {
             if (annotation == null) {
                 continue;
             }
-            setField(instance, field, columns[annotation.value()].trim());
+            int index = annotation.value();
+            String value = index > columns.length ? null : columns[index].trim();
+            setField(instance, field, value);
         }
 
         return instance;

@@ -1,4 +1,3 @@
-GUAVA = 'com.google.guava:guava:jar:r09'
 OPEN_CSV = 'net.sf.opencsv:opencsv:jar:2.1'
 
 define 'csv-parser' do
