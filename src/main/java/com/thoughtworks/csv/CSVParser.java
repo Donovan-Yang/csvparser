@@ -70,7 +70,7 @@ public class CSVParser {
         if (declaringClass == String.class) {
             return value;
         } else if (declaringClass == Integer.TYPE) {
-            return Integer.parseInt(value);
+            return (value == null) ? 0 : Integer.parseInt(value);
         } else if (declaringClass == Boolean.TYPE) {
             return Boolean.valueOf(value);
         } else if (declaringClass == Double.TYPE) {

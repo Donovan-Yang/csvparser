@@ -56,5 +56,7 @@ public class CSVParserTest {
 
         assertThat(foos.get(0).getName(), is("foo"));
         assertThat(foos.get(0).getBigIndexField(), CoreMatchers.<String>nullValue());
+        assertThat(foos.get(0).getBigIndexInt(), is(0));
+        assertThat(foos.get(0).isBigIndexBoolean(), is(false));
     }
 }
