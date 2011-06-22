@@ -1,5 +1,6 @@
 package com.thoughtworks.csv;
 
+import com.thoughtworks.csv.exception.CSVParseException;
 import com.thoughtworks.csv.testmodel.*;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
@@ -73,16 +74,17 @@ public class CSVParserTest {
 
     @Test
     public void should_parse_date_time_by_given_annotated_format() {
-        InputStream is = getInputStreamFromString("Monday, 2012-12-20\nThursday, 2010-10-10\n");
+        InputStream is = getInputStreamFromString("Monday, 2012-12-20, 2012/12/20\nThursday, 2010-10-10, 2012/12/20\n");
         List<DateModel> dateModels = parser.parse(is, DateModel.class);
 
         assertThat(dateModels.size(), is(2));
-        assertThat(dateModels.get(0).getDate(), equalTo(createDate(2012, Calendar.DECEMBER, 20)));
+        assertThat(dateModels.get(0).getStartDate(), equalTo(createDate(2012, Calendar.DECEMBER, 20)));
+        assertThat(dateModels.get(0).getEndDate(), equalTo(createDate(2012, Calendar.DECEMBER, 20)));
     }
 
     @Test(expected = CSVParseException.class)
     public void should_throw_exception_when_date_format_is_not_correct(){
-        InputStream is = getInputStreamFromString("Monday, 2012.12.20");
+        InputStream is = getInputStreamFromString("Monday, 2012.12.20, 2012/12/20");
         parser.parse(is, DateModel.class);
     }
 
@@ -91,7 +93,7 @@ public class CSVParserTest {
         InputStream is = this.getClass().getResourceAsStream("/com/thoughtworks/csv/fixtures/date.csv");
         List<DateModel> dateModels = parser.parse(is, DateModel.class);
         assertThat(dateModels.size(), is(2));
-        assertThat(dateModels.get(0).getDate(), equalTo(createDate(2012, Calendar.DECEMBER, 20)));
+        assertThat(dateModels.get(0).getStartDate(), equalTo(createDate(2012, Calendar.DECEMBER, 20)));
     }
     private Date createDate(int year, int month, int dayOfMonth) {
         return new GregorianCalendar(year, month, dayOfMonth).getTime();

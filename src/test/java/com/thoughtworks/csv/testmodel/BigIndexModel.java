@@ -3,19 +3,19 @@ package com.thoughtworks.csv.testmodel;
 import com.thoughtworks.csv.annotation.CSVColumn;
 
 public class BigIndexModel {
-    @CSVColumn(0)
+    @CSVColumn(index = 0)
     private int id;
 
-    @CSVColumn(1)
+    @CSVColumn(index = 1)
     private String name;
 
-    @CSVColumn(9999)
+    @CSVColumn(index = 9999)
     private String bigIndexField;
 
-    @CSVColumn(9998)
+    @CSVColumn(index = 9998)
     private int bigIndexInt;
 
-    @CSVColumn(9998)
+    @CSVColumn(index = 9998)
     private boolean bigIndexBoolean;
 
     public int getId() {

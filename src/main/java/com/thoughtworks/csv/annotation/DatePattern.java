@@ -6,6 +6,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({java.lang.annotation.ElementType.FIELD})
-public @interface DateType {
-    public String format();
+public @interface DatePattern {
+    public String value();
 }

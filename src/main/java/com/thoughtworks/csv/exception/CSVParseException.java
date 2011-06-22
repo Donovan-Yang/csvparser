@@ -1,4 +1,4 @@
-package com.thoughtworks.csv;
+package com.thoughtworks.csv.exception;
 
 public class CSVParseException extends RuntimeException {
     public CSVParseException() {

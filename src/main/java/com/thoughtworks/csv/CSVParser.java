@@ -2,20 +2,18 @@ package com.thoughtworks.csv;
 
 import au.com.bytecode.opencsv.CSVReader;
 import com.thoughtworks.csv.annotation.CSVColumn;
-import com.thoughtworks.csv.annotation.DateType;
+import com.thoughtworks.csv.exception.CSVParseException;
+import com.thoughtworks.csv.handler.Handler;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class CSVParser {
     public static final char SEPARATOR = ',';
-    public static final String DEFAULT_DATE_PATTERN = "yyyy-MM-dd";
 
     public <T> List<T> parse(InputStream is, Class<T> clazz) {
         CSVReader reader = new CSVReader(new InputStreamReader(is), SEPARATOR);
@@ -50,7 +48,7 @@ public class CSVParser {
             if (annotation == null) {
                 continue;
             }
-            int index = annotation.value();
+            int index = annotation.index();
             String value = index >= columns.length ? null : columns[index].trim();
             setField(instance, field, value);
         }
@@ -78,34 +76,12 @@ public class CSVParser {
     }
 
     private Object parseValue(Field field, String value) {
-        Class<?> declaringClass = field.getType();
-
-        if (declaringClass == String.class) {
-            return value;
-        } else if (declaringClass == Integer.TYPE) {
-            return (value == null) ? 0 : Integer.parseInt(value);
-        } else if (declaringClass == Boolean.TYPE) {
-            return Boolean.valueOf(value);
-        } else if (declaringClass == Double.TYPE) {
-            return Double.parseDouble(value);
-        } else if (declaringClass == Date.class) {
-            return parseDate(field, value);
-        }
-
-        throw new CSVParseException(String.format("%s is not supported.", declaringClass.getName()));
-    }
-
-    private Date parseDate(Field field, String value) {
+        CSVColumn annotation = field.getAnnotation(CSVColumn.class);
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat(getDatePattern(field));
-            return dateFormat.parse(value);
+            Handler handler = (Handler) newInstance(annotation.handler());
+            return handler.parse(field, value);
         } catch (Exception e) {
             throw new CSVParseException(e);
         }
-    }
-
-    private String getDatePattern(Field field) {
-        DateType annotation = field.getAnnotation(DateType.class);
-        return annotation == null ? DEFAULT_DATE_PATTERN : annotation.format();
     }
 }

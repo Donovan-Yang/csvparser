@@ -3,24 +3,24 @@ package com.thoughtworks.csv.testmodel;
 import com.thoughtworks.csv.annotation.CSVColumn;
 
 public class HeroModel {
-    @CSVColumn(0)
+    @CSVColumn(index = 0)
     private String page;
 
-    @CSVColumn(1)
+    @CSVColumn(index = 1)
     private String space;
 
-    @CSVColumn(3)
+    @CSVColumn(index = 3)
     private String overlayDesc;
 
-    @CSVColumn(4)
+    @CSVColumn(index = 4)
     private String overlayLinkText;
 
-    @CSVColumn(5)
+    @CSVColumn(index = 5)
     private String overlayLinkUrl;
 
-    @CSVColumn(2)
+    @CSVColumn(index = 2)
     private String imageUrl;
 
-    @CSVColumn(6)
+    @CSVColumn(index = 6)
     private String overlayTitle;
 }

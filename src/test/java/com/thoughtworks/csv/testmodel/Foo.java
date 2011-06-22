@@ -3,16 +3,16 @@ package com.thoughtworks.csv.testmodel;
 import com.thoughtworks.csv.annotation.CSVColumn;
 
 public class Foo {
-    @CSVColumn(0)
+    @CSVColumn(index = 0)
     private int id;
 
-    @CSVColumn(1)
+    @CSVColumn(index = 1)
     private String name;
 
-    @CSVColumn(2)
+    @CSVColumn(index = 2)
     private boolean isSelected;
 
-    @CSVColumn(3)
+    @CSVColumn(index = 3)
     private double price;
 
     public double getPrice() {
