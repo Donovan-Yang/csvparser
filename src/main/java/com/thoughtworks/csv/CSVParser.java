@@ -24,10 +24,17 @@ public class CSVParser {
     private <T> List<T> parseFromCSV(Class<T> clazz, CSVReader reader) throws IOException {
         List<T> results = new ArrayList<T>();
         List<String[]> csvGroup = reader.readAll();
-        for (String[] line : csvGroup) {
-            results.add(parseLine(clazz, line));
+        for (String[] columns : csvGroup) {
+            if (!isBlankLine(columns)) {
+                results.add(parseLine(clazz, columns));
+            }
         }
+
         return results;
+    }
+
+    private boolean isBlankLine(String[] columns) {
+        return columns.length == 1 && columns[0].trim().length() == 0;
     }
 
     private <T> T parseLine(Class<T> clazz, String[] columns) {
@@ -38,7 +45,7 @@ public class CSVParser {
                 continue;
             }
             int index = annotation.value();
-            String value = index > columns.length ? null : columns[index].trim();
+            String value = index >= columns.length ? null : columns[index].trim();
             setField(instance, field, value);
         }
 

@@ -3,6 +3,7 @@ package com.thoughtworks.csv;
 import com.thoughtworks.csv.testmodel.BigIndexModel;
 import com.thoughtworks.csv.testmodel.FieldTypeNotSupported;
 import com.thoughtworks.csv.testmodel.Foo;
+import com.thoughtworks.csv.testmodel.HeroModel;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,5 +59,13 @@ public class CSVParserTest {
         assertThat(foos.get(0).getBigIndexField(), CoreMatchers.<String>nullValue());
         assertThat(foos.get(0).getBigIndexInt(), is(0));
         assertThat(foos.get(0).isBigIndexBoolean(), is(false));
+    }
+
+    @Test
+    public void should_parse_heroes_ignoring_blank_line(){
+        InputStream is = this.getClass().getResourceAsStream("/com/thoughtworks/csv/fixtures/heroes.csv");
+        List<HeroModel> heroModels = parser.parse(is, HeroModel.class);
+        assertThat(heroModels.size(), is(18));
+
     }
 }
