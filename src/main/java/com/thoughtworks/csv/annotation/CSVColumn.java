@@ -1,4 +1,4 @@
-package com.thoughtworks.csv;
+package com.thoughtworks.csv.annotation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

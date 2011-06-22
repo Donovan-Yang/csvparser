@@ -1,16 +1,18 @@
 package com.thoughtworks.csv;
 
-import com.thoughtworks.csv.testmodel.BigIndexModel;
-import com.thoughtworks.csv.testmodel.FieldTypeNotSupported;
-import com.thoughtworks.csv.testmodel.Foo;
-import com.thoughtworks.csv.testmodel.HeroModel;
+import com.thoughtworks.csv.testmodel.*;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -62,10 +64,46 @@ public class CSVParserTest {
     }
 
     @Test
-    public void should_parse_heroes_ignoring_blank_line(){
+    public void should_parse_heroes_ignoring_blank_line() {
         InputStream is = this.getClass().getResourceAsStream("/com/thoughtworks/csv/fixtures/heroes.csv");
         List<HeroModel> heroModels = parser.parse(is, HeroModel.class);
         assertThat(heroModels.size(), is(18));
 
+    }
+
+    @Test
+    public void should_parse_date_time_by_given_annotated_format() {
+        InputStream is = getInputStreamFromString("Monday, 2012-12-20\nThursday, 2010-10-10\n");
+        List<DateModel> dateModels = parser.parse(is, DateModel.class);
+
+        assertThat(dateModels.size(), is(2));
+        assertThat(dateModels.get(0).getDate(), equalTo(createDate(2012, Calendar.DECEMBER, 20)));
+    }
+
+    @Test(expected = CSVParseException.class)
+    public void should_throw_exception_when_date_format_is_not_correct(){
+        InputStream is = getInputStreamFromString("Monday, 2012.12.20");
+        parser.parse(is, DateModel.class);
+    }
+
+    @Test
+    public void should_parse_date_from_csv_file(){
+        InputStream is = this.getClass().getResourceAsStream("/com/thoughtworks/csv/fixtures/date.csv");
+        List<DateModel> dateModels = parser.parse(is, DateModel.class);
+        assertThat(dateModels.size(), is(2));
+        assertThat(dateModels.get(0).getDate(), equalTo(createDate(2012, Calendar.DECEMBER, 20)));
+    }
+    private Date createDate(int year, int month, int dayOfMonth) {
+        return new GregorianCalendar(year, month, dayOfMonth).getTime();
+    }
+
+    private InputStream getInputStreamFromString(String input) {
+        InputStream is;
+        try {
+            is = new ByteArrayInputStream(input.getBytes("UTF-8"));
+        } catch (Exception e) {
+            return null;
+        }
+        return is;
     }
 }
