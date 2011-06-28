@@ -1,5 +1,7 @@
 OPEN_CSV = 'net.sf.opencsv:opencsv:jar:2.1'
 
+repositories.remote << 'http://repo1.maven.org/maven2/'
+
 define 'csv-parser' do
   project.version = '1.0'
   project.group = 'com.thoughtworks'

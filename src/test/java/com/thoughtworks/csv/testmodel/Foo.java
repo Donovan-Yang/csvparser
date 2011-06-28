@@ -15,6 +15,15 @@ public class Foo {
     @CSVColumn(index = 3)
     private double price;
 
+    public Foo(){}
+
+    public Foo(int id, String name, boolean selected, double price) {
+        this.id = id;
+        this.name = name;
+        isSelected = selected;
+        this.price = price;
+    }
+
     public double getPrice() {
         return price;
     }
