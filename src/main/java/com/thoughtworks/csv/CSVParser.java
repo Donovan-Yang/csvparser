@@ -1,13 +1,14 @@
 package com.thoughtworks.csv;
 
 import au.com.bytecode.opencsv.CSVReader;
-import com.thoughtworks.csv.annotation.CSVColumn;
+import com.thoughtworks.csv.annotation.Column;
 import com.thoughtworks.csv.exception.CSVParseException;
-import com.thoughtworks.csv.handler.Handler;
+import com.thoughtworks.csv.handler.annotationhandler.AnnotationHandler;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,16 +45,36 @@ public class CSVParser {
     private <T> T parseLine(Class<T> clazz, String[] columns) {
         T instance = newInstance(clazz);
         for (Field field : clazz.getDeclaredFields()) {
-            CSVColumn annotation = field.getAnnotation(CSVColumn.class);
-            if (annotation == null) {
-                continue;
-            }
-            int index = annotation.index();
-            String value = index >= columns.length ? null : columns[index].trim();
-            setField(instance, field, value);
+            setField(instance, field, parseValue(columns, field));
         }
 
         return instance;
+    }
+
+    private Object parseValue(String[] columns, Field field) {
+        AnnotationHandler annotationHandler = getAnnotationHandler(field);
+        return annotationHandler.parse(columns, field);
+    }
+
+    private AnnotationHandler getAnnotationHandler(Field field) {
+        Annotation[] annotations = field.getAnnotations();
+        for (Annotation annotation : annotations) {
+            Column columnAnnotation = annotation.annotationType().getAnnotation(Column.class);
+            if (columnAnnotation == null) {
+                continue;
+            }
+            return newInstance(columnAnnotation.annotationHandler());
+        }
+        return null;
+    }
+
+    private <T> void setField(T instance, Field field, Object parsedValue) {
+        try {
+            field.setAccessible(true);
+            field.set(instance, parsedValue);
+        } catch (IllegalAccessException e) {
+            throw new CSVParseException(e);
+        }
     }
 
     private <T> T newInstance(Class<T> clazz) {
@@ -66,22 +87,4 @@ public class CSVParser {
         }
     }
 
-    private <T> void setField(T instance, Field field, String value) {
-        field.setAccessible(true);
-        try {
-            field.set(instance, parseValue(field, value));
-        } catch (IllegalAccessException e) {
-            throw new CSVParseException(e);
-        }
-    }
-
-    private Object parseValue(Field field, String value) {
-        CSVColumn annotation = field.getAnnotation(CSVColumn.class);
-        try {
-            Handler handler = (Handler) newInstance(annotation.handler());
-            return handler.parse(field, value);
-        } catch (Exception e) {
-            throw new CSVParseException(e);
-        }
-    }
 }

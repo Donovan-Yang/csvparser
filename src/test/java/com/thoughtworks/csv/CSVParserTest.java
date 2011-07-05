@@ -4,6 +4,7 @@ import com.thoughtworks.csv.exception.CSVParseException;
 import com.thoughtworks.csv.testmodel.*;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -94,6 +95,34 @@ public class CSVParserTest {
         List<DateModel> dateModels = parser.parse(is, DateModel.class);
         assertThat(dateModels.size(), is(2));
         assertThat(dateModels.get(0).getStartDate(), equalTo(createDate(2012, Calendar.DECEMBER, 20)));
+    }
+
+    @Test
+    public void should_parse_var_column() {
+        InputStream is = getInputStreamFromString("1, black, white");
+        List<VarColumnModel> varColumnModels = parser.parse(is, VarColumnModel.class);
+
+        assertThat(varColumnModels.size(), is(1));
+
+        VarColumnModel firstVarColumnModel = varColumnModels.get(0);
+
+        assertThat(firstVarColumnModel.getTags().contains("black"), is(true));
+        assertThat(firstVarColumnModel.getTags().contains("white"), is(true));
+    }
+
+    @Test
+    @Ignore("will fix it later")
+    public void should_parse_var_column_which_type_is_boolean(){
+        InputStream is = getInputStreamFromString("1, true, false");
+        List<VarBooleanColumnModel> varColumnModels = parser.parse(is, VarBooleanColumnModel.class);
+
+        assertThat(varColumnModels.size(), is(1));
+
+        VarBooleanColumnModel booleanColumnModel = varColumnModels.get(0);
+
+        assertThat(booleanColumnModel.getId(), is(1));
+        assertThat(booleanColumnModel.getBooleanList().get(0), is(true));
+        assertThat(booleanColumnModel.getBooleanList().get(1), is(false));
     }
     private Date createDate(int year, int month, int dayOfMonth) {
         return new GregorianCalendar(year, month, dayOfMonth).getTime();
