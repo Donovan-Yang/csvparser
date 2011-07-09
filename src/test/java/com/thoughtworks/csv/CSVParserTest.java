@@ -126,6 +126,34 @@ public class CSVParserTest {
         assertThat(booleanColumnModel.getBooleanList().get(1), is(false));
     }
 
+    @Test
+    public void should_parse_var_column_which_type_is_int(){
+        InputStream is = getInputStreamFromString("1, 19, 38");
+        List<VarIntColumnModel> varColumnModels = parser.parse(is, VarIntColumnModel.class);
+
+        assertThat(varColumnModels.size(), is(1));
+        VarIntColumnModel varIntColumnModel = varColumnModels.get(0);
+
+        assertThat(varIntColumnModel.getId(), is(1));
+        assertThat(varIntColumnModel.getScores().size(), is(2));
+        assertThat(varIntColumnModel.getScores().contains(19), is(true));
+        assertThat(varIntColumnModel.getScores().contains(38), is(true));
+    }
+
+    @Test
+    public void should_parse_var_column_which_type_is_double(){
+        InputStream is = getInputStreamFromString("1, 19.1, 38.2");
+        List<VarDoubleColumnModel> varColumnModels = parser.parse(is, VarDoubleColumnModel.class);
+
+        assertThat(varColumnModels.size(), is(1));
+        VarDoubleColumnModel varDoubleColumnModel = varColumnModels.get(0);
+
+        assertThat(varDoubleColumnModel.getId(), is(1));
+        assertThat(varDoubleColumnModel.getScores().size(), is(2));
+        assertThat(varDoubleColumnModel.getScores().contains(19.1), is(true));
+        assertThat(varDoubleColumnModel.getScores().contains(38.2), is(true));
+    }
+
     private Date createDate(int year, int month, int dayOfMonth) {
         return new GregorianCalendar(year, month, dayOfMonth).getTime();
     }

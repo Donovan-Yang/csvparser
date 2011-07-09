@@ -15,11 +15,11 @@ public class DefaultTypeHandler implements TypeHandler {
     private Object parse(Type fieldType, String value) {
         if (fieldType == String.class) {
             return value;
-        } else if (fieldType == Integer.TYPE || fieldType == int.class) {
+        } else if (fieldType == Integer.TYPE || fieldType == Integer.class) {
             return (value == null) ? 0 : Integer.parseInt(value);
-        } else if (fieldType == Boolean.class || fieldType == boolean.class) {
+        } else if (fieldType == Boolean.TYPE || fieldType == Boolean.class) {
             return Boolean.valueOf(value);
-        } else if (fieldType == Double.class || fieldType == double.class) {
+        } else if (fieldType == Double.TYPE || fieldType == Double.class) {
             return Double.parseDouble(value);
         }
 
