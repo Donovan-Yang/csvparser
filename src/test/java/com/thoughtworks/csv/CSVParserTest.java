@@ -4,11 +4,11 @@ import com.thoughtworks.csv.exception.CSVParseException;
 import com.thoughtworks.csv.testmodel.*;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -54,8 +54,8 @@ public class CSVParserTest {
         assertThat(foos.get(1).getName(), is("normal blank"));
     }
 
-    @Test
-    public void should_parse_as_null_for_bigger_index_column() {
+    @Test(expected = CSVParseException.class)
+    public void should_throw_exception_when_index_is_invalid() {
         InputStream is = this.getClass().getResourceAsStream("/com/thoughtworks/csv/fixtures/foo.csv");
         List<BigIndexModel> foos = parser.parse(is, BigIndexModel.class);
 
@@ -103,15 +103,16 @@ public class CSVParserTest {
         List<VarColumnModel> varColumnModels = parser.parse(is, VarColumnModel.class);
 
         assertThat(varColumnModels.size(), is(1));
+        VarColumnModel varColumnModel = varColumnModels.get(0);
 
-        VarColumnModel firstVarColumnModel = varColumnModels.get(0);
+        assertThat(varColumnModel.getTags().size(), is(2));
+        VarColumnModel firstVarColumnModel = varColumnModel;
 
         assertThat(firstVarColumnModel.getTags().contains("black"), is(true));
         assertThat(firstVarColumnModel.getTags().contains("white"), is(true));
     }
 
     @Test
-    @Ignore("will fix it later")
     public void should_parse_var_column_which_type_is_boolean(){
         InputStream is = getInputStreamFromString("1, true, false");
         List<VarBooleanColumnModel> varColumnModels = parser.parse(is, VarBooleanColumnModel.class);
@@ -124,6 +125,7 @@ public class CSVParserTest {
         assertThat(booleanColumnModel.getBooleanList().get(0), is(true));
         assertThat(booleanColumnModel.getBooleanList().get(1), is(false));
     }
+
     private Date createDate(int year, int month, int dayOfMonth) {
         return new GregorianCalendar(year, month, dayOfMonth).getTime();
     }

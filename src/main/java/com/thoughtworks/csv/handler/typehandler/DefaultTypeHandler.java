@@ -2,23 +2,28 @@ package com.thoughtworks.csv.handler.typehandler;
 
 import com.thoughtworks.csv.exception.CSVParseException;
 
-import java.lang.reflect.Field;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Map;
 
 public class DefaultTypeHandler implements TypeHandler {
     @Override
-    public Object parse(Field field, String value) {
-        Class<?> declaringClass = field.getType();
+    public Object parse(Type fieldType, Map<Class, Annotation> mapper, String value) {
+        return parse(fieldType, value);
+    }
 
-        if (declaringClass == String.class) {
+    private Object parse(Type fieldType, String value) {
+        if (fieldType == String.class) {
             return value;
-        } else if (declaringClass == Integer.TYPE) {
+        } else if (fieldType == Integer.TYPE || fieldType == int.class) {
             return (value == null) ? 0 : Integer.parseInt(value);
-        } else if (declaringClass == Boolean.TYPE) {
+        } else if (fieldType == Boolean.class || fieldType == boolean.class) {
             return Boolean.valueOf(value);
-        } else if (declaringClass == Double.TYPE) {
+        } else if (fieldType == Double.class || fieldType == double.class) {
             return Double.parseDouble(value);
         }
-        throw new CSVParseException(String.format("%s is not supported.", declaringClass.getName()));
+
+        throw new CSVParseException(String.format("%s is not supported.", fieldType.getClass().getName()));
     }
 
 }
