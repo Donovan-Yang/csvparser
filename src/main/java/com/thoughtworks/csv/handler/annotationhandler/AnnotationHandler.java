@@ -1,24 +1,21 @@
 package com.thoughtworks.csv.handler.annotationhandler;
 
-import com.thoughtworks.csv.annotation.CSVColumn;
 import com.thoughtworks.csv.exception.CSVParseException;
 import com.thoughtworks.csv.handler.typehandler.TypeHandler;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
 public abstract class AnnotationHandler {
-    public abstract Object parse(String[] columns, Field field);
+    protected abstract Object parse(String[] columns, Field field, TypeHandler typeHandler);
+    protected abstract void validate(String[] columns, Field field);
+    protected abstract TypeHandler getHandler(Field field);
 
-    public TypeHandler getTypeHandler(Field field) {
-        CSVColumn annotation = field.getAnnotation(CSVColumn.class);
-        if (annotation != null) {
-            return newInstance(annotation.typeHandler());
-        }
-        throw new CSVParseException("");
+    public Object parse(String[] columns, Field field){
+        validate(columns, field);
+        return parse(columns, field, getHandler(field));
     }
 
     public Map<Class, Annotation> getAnnotationMapper(Field field) {

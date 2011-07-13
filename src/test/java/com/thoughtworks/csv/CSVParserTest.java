@@ -1,14 +1,23 @@
 package com.thoughtworks.csv;
 
 import com.thoughtworks.csv.exception.CSVParseException;
-import com.thoughtworks.csv.testmodel.*;
+import com.thoughtworks.csv.testmodel.BigIndexModel;
+import com.thoughtworks.csv.testmodel.DateModel;
+import com.thoughtworks.csv.testmodel.FieldTypeNotSupported;
+import com.thoughtworks.csv.testmodel.Foo;
+import com.thoughtworks.csv.testmodel.HeroModel;
+import com.thoughtworks.csv.testmodel.SomeFiledWithoutAnnotation;
+import com.thoughtworks.csv.testmodel.VarBigFromColumnModel;
+import com.thoughtworks.csv.testmodel.VarBooleanColumnModel;
+import com.thoughtworks.csv.testmodel.VarColumnModel;
+import com.thoughtworks.csv.testmodel.VarDoubleColumnModel;
+import com.thoughtworks.csv.testmodel.VarIntColumnModel;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -152,6 +161,18 @@ public class CSVParserTest {
         assertThat(varDoubleColumnModel.getScores().size(), is(2));
         assertThat(varDoubleColumnModel.getScores().contains(19.1), is(true));
         assertThat(varDoubleColumnModel.getScores().contains(38.2), is(true));
+    }
+
+    @Test(expected = CSVParseException.class)
+    public void should_throw_exception_when_var_column_from_is_invalid(){
+        InputStream is = getInputStreamFromString("19.1, 38.2");
+        parser.parse(is, VarBigFromColumnModel.class);
+    }
+
+    @Test(expected = CSVParseException.class)
+    public void should_throws_exception_when_field_of_model_is_not_annotated() {
+        InputStream is = getInputStreamFromString("1, foo, true, 4.1, 5");
+        parser.parse(is, SomeFiledWithoutAnnotation.class);
     }
 
     private Date createDate(int year, int month, int dayOfMonth) {

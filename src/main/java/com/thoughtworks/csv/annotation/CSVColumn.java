@@ -8,7 +8,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Column(annotationHandler = SingleColumnHandler.class)
+@ColumnType(annotationHandler = SingleColumnHandler.class)
 public @interface CSVColumn {
     int index();
     Class<? extends TypeHandler> typeHandler() default DefaultTypeHandler.class;

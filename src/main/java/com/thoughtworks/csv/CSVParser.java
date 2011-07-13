@@ -1,7 +1,7 @@
 package com.thoughtworks.csv;
 
 import au.com.bytecode.opencsv.CSVReader;
-import com.thoughtworks.csv.annotation.Column;
+import com.thoughtworks.csv.annotation.ColumnType;
 import com.thoughtworks.csv.exception.CSVParseException;
 import com.thoughtworks.csv.handler.annotationhandler.AnnotationHandler;
 
@@ -59,13 +59,14 @@ public class CSVParser {
     private AnnotationHandler getAnnotationHandler(Field field) {
         Annotation[] annotations = field.getAnnotations();
         for (Annotation annotation : annotations) {
-            Column columnAnnotation = annotation.annotationType().getAnnotation(Column.class);
-            if (columnAnnotation == null) {
+            ColumnType columnTypeAnnotation = annotation.annotationType().getAnnotation(ColumnType.class);
+            if (columnTypeAnnotation == null) {
                 continue;
             }
-            return newInstance(columnAnnotation.annotationHandler());
+            return newInstance(columnTypeAnnotation.annotationHandler());
         }
-        return null;
+
+        throw new CSVParseException(String.format("%s is not annotated with any of the column annotation.", field.getName()));
     }
 
     private <T> void setField(T instance, Field field, Object parsedValue) {
@@ -86,5 +87,4 @@ public class CSVParser {
             throw new CSVParseException(e);
         }
     }
-
 }

@@ -8,6 +8,9 @@ public class SomeFiledWithoutAnnotation extends Foo{
         this.fieldWithoutAnnotation= fieldWithoutAnnotation;
     }
 
+    public SomeFiledWithoutAnnotation() {
+    }
+
     public String getFieldWithoutAnnotation() {
         return fieldWithoutAnnotation;
     }

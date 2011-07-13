@@ -9,10 +9,6 @@ import java.util.Map;
 public class DefaultTypeHandler implements TypeHandler {
     @Override
     public Object parse(Type fieldType, Map<Class, Annotation> mapper, String value) {
-        return parse(fieldType, value);
-    }
-
-    private Object parse(Type fieldType, String value) {
         if (fieldType == String.class) {
             return value;
         } else if (fieldType == Integer.TYPE || fieldType == Integer.class) {
