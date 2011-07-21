@@ -15,6 +15,7 @@ import java.util.List;
 
 public class CSVParser {
     public static final char SEPARATOR = ',';
+    private boolean withHeader = false;
 
     public <T> List<T> parse(InputStream is, Class<T> clazz) {
         CSVReader reader = new CSVReader(new InputStreamReader(is), SEPARATOR);
@@ -27,7 +28,7 @@ public class CSVParser {
 
     private <T> List<T> parseFromCSV(Class<T> clazz, CSVReader reader) throws IOException {
         List<T> results = new ArrayList<T>();
-        List<String[]> lines = reader.readAll();
+        List<String[]> lines = getAvailableLines(reader);
 
         for (String[] columns : lines) {
             if (!isBlankLine(columns)) {
@@ -36,6 +37,11 @@ public class CSVParser {
         }
 
         return results;
+    }
+
+    private List<String[]> getAvailableLines(CSVReader reader) throws IOException {
+        List<String[]> lines = reader.readAll();
+        return withHeader ? lines.subList(1, lines.size()) : lines;
     }
 
     private boolean isBlankLine(String[] columns) {
@@ -86,5 +92,10 @@ public class CSVParser {
         } catch (IllegalAccessException e) {
             throw new CSVParseException(e);
         }
+    }
+
+    public CSVParser withHeader(boolean withHeader) {
+        this.withHeader = withHeader;
+        return this;
     }
 }

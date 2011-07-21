@@ -175,6 +175,14 @@ public class CSVParserTest {
         parser.parse(is, SomeFiledWithoutAnnotation.class);
     }
 
+    @Test
+    public void should_parse_csv_file_with_header() {
+        InputStream inputStream = getInputStreamFromString("Id, Name, Is Selected, Price\n1, foo, true, 12.11");
+        List<Foo> foos = parser.withHeader(true).parse(inputStream, Foo.class);
+
+        assertThat(foos.size(), is(1));
+    }
+
     private Date createDate(int year, int month, int dayOfMonth) {
         return new GregorianCalendar(year, month, dayOfMonth).getTime();
     }
